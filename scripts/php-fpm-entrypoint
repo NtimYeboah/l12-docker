@@ -8,8 +8,8 @@ main() {
         run_npm_build
         prepare_storage
         make_env
-        wait_for_db
-        run_migrations
+        #wait_for_db
+        #run_migrations
         optimize_app
         run_server "$@"
     fi
