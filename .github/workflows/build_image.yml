@@ -34,5 +34,7 @@ jobs:
           QUEUE_WORKER: l12-docker-queue-worker
         run: |
           docker compose build
+          docker image ls
           docker tag $WEB:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker tag $QUEUE_WORKER:latest $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG          
