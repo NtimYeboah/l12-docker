@@ -7,6 +7,7 @@ main() {
         prepare_file_permissions
         run_npm_build
         prepare_storage
+        make_env
         wait_for_db
         run_migrations
         optimize_app
@@ -54,6 +55,12 @@ prepare_storage() {
     #done
     #echo "Database is ready!"
 #}
+
+make_env() {
+    cp .env.example .env
+    chmod 775 .env
+    ./artisan key:generate
+}
 
 wait_for_db() {
     # Wait for the database to be ready
