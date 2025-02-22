@@ -1,7 +1,7 @@
 services:
   app:
     build:
-      context: ./app
+      context: .
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
@@ -9,21 +9,21 @@ services:
     depends_on:
       - db
     env_file:
-      - ./app/.env
+      - .env
     volumes:
       - storage:/usr/share/nginx/html/storage:rw
       - public:/usr/share/nginx/html/public:rw
 
   queue-worker:
     build:
-      context: ./app
+      context: .
       dockerfile: Dockerfile
     restart: unless-stopped
     command: php artisan queue:work
     environment:
       IS_WORKER: true
     env_file:
-      - ./app/.env
+      - .env
     depends_on:
       - db
       - redis
