@@ -8,8 +8,6 @@ services:
       - 9000:9000
     depends_on:
       - nginx
-    env_file:
-      - .env
     volumes:
       - storage:/usr/share/nginx/html/storage:rw
       - public:/usr/share/nginx/html/public:rw
@@ -22,8 +20,6 @@ services:
     command: php artisan queue:work
     environment:
       IS_WORKER: true
-    env_file:
-      - .env
     depends_on:
       - nginx
     volumes:
