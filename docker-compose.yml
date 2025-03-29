@@ -8,10 +8,12 @@ services:
       - 9000:9000
     depends_on:
       - nginx
+      - db
+    env_file:
+      - .env
     volumes:
       - storage:/usr/share/nginx/html/storage:rw
       - public:/usr/share/nginx/html/public:rw
-
   queue-worker:
     build:
       context: .
@@ -19,23 +21,51 @@ services:
     restart: unless-stopped
     command: php artisan queue:work
     environment:
-      IS_WORKER: true
+      IS_WORKER: "true"
+    env_file:
+      - .env
     depends_on:
-      - nginx
+      - db
+      - redis
     volumes:
       - storage:/usr/share/nginx/html/storage:rw
       - public:/usr/share/nginx/html/public:rw
-
   nginx:
     image: nginx:1-alpine
     ports:
       - 80:80
       - 443:443
     volumes:
-      - ./nginx.conf:/etc/nginx/templates/default.conf.template
+      - ./scripts/nginx.conf:/etc/nginx/templates/default.conf.template
       - storage:/usr/share/nginx/html/storage:rw
       - public:/usr/share/nginx/html/public:ro
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: news_aggregator
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+  redis:
+    image: bitnami/redis:7.2
+    platform: linux/arm64
+    ports:
+      - 6379:6379
+    restart: always
+    volumes:
+      - redis-data:/bitnami/redis/data
+    environment:
+      - ALLOW_EMPTY_PASSWORD=no
+      - REDIS_PASSWORD=redis
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
 
 volumes:
   storage:
   public:
+  mysql-data:
+  redis-data:

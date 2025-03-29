@@ -4,10 +4,13 @@ FROM php:8.3.11-fpm
 RUN apt-get update && apt-get install -y \
     libzip-dev \
     libpng-dev \
+    unzip \
+    mariadb-client \
     postgresql-client \
     libpq-dev \
     nodejs \
     npm \
+    && docker-php-ext-install pdo_mysql \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -17,7 +20,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Install required packages
-RUN docker-php-ext-install pdo pdo_pgsql pgsql zip gd bcmath zip \
+RUN docker-php-ext-install pdo pdo_pgsql pgsql gd bcmath zip \
     && pecl install redis \
     && docker-php-ext-enable redis
 

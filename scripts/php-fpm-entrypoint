@@ -9,7 +9,7 @@ main() {
         prepare_storage
         make_env
         #wait_for_db
-        #run_migrations
+        run_migrations
         optimize_app
         run_server "$@"
     fi
@@ -47,14 +47,15 @@ prepare_storage() {
     php artisan storage:link
 }
 
-#wait_for_db() {
+wait_for_db() {
+    echo $DB_HOST
     # Wait for the database to be ready
-    #echo "Waiting for the database to be ready..."
-    #while ! mysqladmin ping -h"$DB_HOST" --silent; do
-        #sleep 1
-    #done
-    #echo "Database is ready!"
-#}
+    echo "Waiting for the database to be ready..."
+    while ! mysqladmin ping -h "$DB_HOST" --silent; do
+        sleep 1
+    done
+    echo "Database is ready!"
+}
 
 make_env() {
     cp .env.example .env
@@ -62,15 +63,8 @@ make_env() {
     ./artisan key:generate
 }
 
-wait_for_db() {
-    # Wait for the database to be ready
-    until ./artisan migrate:status; 2>&1 | grep -q -E "(Migration table not found|Migration name)"; do
-        sleep 1
-    done
-}
-
 run_migrations() {
-    ./artisan migrate
+    ./artisan migrate --force
 }
 
 #Look into how to run the optimize command in a production environment
